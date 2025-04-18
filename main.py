@@ -58,7 +58,12 @@ import shutil
 segmentation_dir = os.path.join(os.getcwd(),"./SEGMENTATION/bone_seg_nnunet_main")
 input_images_dir = "./INPUT_IMAGES"
 testing_images_dir = os.path.join(segmentation_dir, "./testing_images")
+
+if os.path.exists(testing_images_dir) and not os.path.isdir(testing_images_dir):
+    os.remove(testing_images_dir)
+os.makedirs(testing_images_dir, exist_ok=True)
 print(testing_images_dir)
+
 # Check if input images directory exists
 if os.path.exists(input_images_dir):
     for file_name in os.listdir(input_images_dir):
