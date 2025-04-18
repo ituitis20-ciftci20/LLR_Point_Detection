@@ -39,5 +39,7 @@ Put your input images into the ./INPUT_IMAGES folder, then run main.py
 
 # Outputs
 Output images of YOLO model can be found at ./OUTPUT/YOLO folder
+
 Output images of Segmentation model, can be found at ./OUTPUT/SEGMENTATION/test
+
 Points in the Json format can be found ./OUTPUT/JSON_RESULTS
