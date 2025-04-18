@@ -24,7 +24,7 @@ Download the required dependecies.
 
 ```curl -L -C - --progress-bar -o aam_full_h_59_left.p "https://drive.usercontent.google.com/download?id=1akIr_lZlVpryw8R_7X96E_W0nq2NbjuG&export=download&authuser=0&confirm=t&uuid=abdfd9e6-9ad0-4fae-9b01-c1cd37e01561&at=APcmpoykDkhjUc40uD5pf0Fz1tPB%3A1744994309536"```
 
-4-	Move the models
+5-	Lastly, move models, then run main.py
 
 ```
 unzip Dataset003_FemurTibia.zip
