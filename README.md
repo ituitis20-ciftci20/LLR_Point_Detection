@@ -24,7 +24,7 @@ Download the required dependecies.
 
 ```curl -L -C - --progress-bar -o aam_full_h_59_left.p "https://drive.usercontent.google.com/download?id=1akIr_lZlVpryw8R_7X96E_W0nq2NbjuG&export=download&authuser=0&confirm=t&uuid=abdfd9e6-9ad0-4fae-9b01-c1cd37e01561&at=APcmpoykDkhjUc40uD5pf0Fz1tPB%3A1744994309536"```
 
-5-	Lastly, move models, then run main.py
+5-	Lastly, move models
 
 ```
 unzip Dataset003_FemurTibia.zip
@@ -33,3 +33,11 @@ mv model_28.07.2022_3_classes_p6.h5 ./YOLO/models
 mv aam_full_h_59_right.p ./YOLO/models
 mv aam_full_h_59_left.p ./YOLO/models
 ```
+
+# Input Images
+Put your input images into the ./INPUT_IMAGES folder, then run main.py
+
+# Outputs
+Output images of YOLO model can be found at ./OUTPUT/YOLO folder
+Output images of Segmentation model, can be found at ./OUTPUT/SEGMENTATION/test
+Points in the Json format can be found ./OUTPUT/JSON_RESULTS
