@@ -9,7 +9,12 @@ Download the required dependencies.
 
 # First
 
+1. Create and activate a new conda environment using python 3.11
+```
+conda create -n new_env python=3.10
+conda activate new_env
 Install python 3.11 in your environment
+```
 
 # Download Ready Models
 1- Dataset003_FemurTibia.zip:
