@@ -167,9 +167,9 @@ def process_image(filename):
         # f.write(f"Calculated HKA Right: {sag_hka_angle:.2f} degrees\n")
 
         if left_notch[0] is not None:
-            left_notch_global = (left_notch[0] + y_left - y_margin_left, left_notch[1] + x_left - x_margin_left)
-            left_p1_global = (left_p1[0] + y_left - y_margin_left, left_p1[1] + x_left - x_margin_left)
-            left_p2_global = (left_p2[0] + y_left - y_margin_left, left_p2[1] + x_left - x_margin_left)
+            left_notch_global = (int(left_notch[0] + y_left - y_margin_left), int(left_notch[1] + x_left - x_margin_left))
+            left_p1_global = (int(left_p1[0] + y_left - y_margin_left), int(left_p1[1] + x_left - x_margin_left))
+            left_p2_global = (int(left_p2[0] + y_left - y_margin_left), int(left_p2[1] + x_left - x_margin_left))
             f.write(f"Left Notch Coordinates: {left_notch_global}\n")
             f.write(f"Left P1 Coordinates: {left_p1_global}\n")
             f.write(f"Left P2 Coordinates: {left_p2_global}\n")
@@ -178,9 +178,9 @@ def process_image(filename):
             print(f"Left P2 Coordinates: {left_p2_global}")
 
         if right_notch[0] is not None:
-            right_notch_global = (right_notch[0] + y_right - y_margin_right, right_notch[1] + x_right - x_margin_right)
-            right_p1_global = (right_p1[0] + y_right - y_margin_right, right_p1[1] + x_right - x_margin_right)
-            right_p2_global = (right_p2[0] + y_right - y_margin_right, right_p2[1] + x_right - x_margin_right)
+            right_notch_global = (int(right_notch[0] + y_right - y_margin_right), int(right_notch[1] + x_right - x_margin_right))
+            right_p1_global = (int(right_p1[0] + y_right - y_margin_right), int(right_p1[1] + x_right - x_margin_right))
+            right_p2_global = (int(right_p2[0] + y_right - y_margin_right), int(right_p2[1] + x_right - x_margin_right))
             f.write(f"Right Notch Coordinates: {right_notch_global}\n")
             f.write(f"Right P1 Coordinates: {right_p1_global}\n")
             f.write(f"Right P2 Coordinates: {right_p2_global}\n")
