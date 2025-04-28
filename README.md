@@ -3,18 +3,9 @@
 GPU is required.
 Download the required dependencies.
 
-1. Put the Segmentation model (as a folder named Dataset003_FemurTibia) in the SEGMENTATION/models folder.
+1. Put the Segmentation model (as a folder named Dataset003_FemurTibia) in the SEGMENTATION/bone_seg_nnunet_main folder.
 2. Put YOLO related 3 models (.p and .h5) in the YOLO/models folder:
 - aam_full_h_59_right.p, aam_full_h_59_left.p, model_28.07.2022_3_classes_p6.h5
-
-# First
-
-Install python 3.11 in your environment
-1. Create and activate a new conda environment using python 3.11
-```
-conda create -n new_env python=3.11
-conda activate new_env
-```
 
 # Download Ready Models
 1- Dataset003_FemurTibia.zip:
@@ -45,6 +36,11 @@ mv aam_full_h_59_left.p ./YOLO/models
 
 # Input Images
 Put your input images into the ./INPUT_IMAGES folder, then run main.py
+
+# Run the main.py Program
+```
+python main.py
+```
 
 # Outputs
 Output images of YOLO model can be found at ./OUTPUT/YOLO folder
