@@ -1,14 +1,60 @@
 import subprocess
 
-# Move segmentation model
-subprocess.run(['mv', './Dataset003_FemurTibia', '../bone_seg_nnunet_main'], cwd='./SEGMENTATION/models')
+yolo_cmds_1 = "conda create -n yolo_env python=3.11 -y"
 
-# Get repo dependencies for YOLO
-subprocess.run(['pip3', 'install', 'scipy==1.10.0', 'typeguard', 'menpo', 'menpofit', 'tensorflow==2.12', 'tensorflow-addons==0.20.0', 'pillow', 'scikit-image', 'scikit-learn', 'numpy', 'matplotlib', 'pandas', 'pingouin', 'seaborn', 'statsmodels', 'notebook', 'configparser'])
-# Get repo dependencies for segmentation
-import subprocess
-subprocess.run(['pip3', 'install', 'torch==2.3', 'torchaudio==2.3', 'torchvision==0.18', 'opencv-python', 'matplotlib'])
+yolo_cmds_2 = """
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate yolo_env
+conda install scipy==1.10.0 -y
+conda install -c conda-forge menpo -y
+pip install menpofit --disable-pip-version-check --no-python-version-warning --root-user-action=ignore -q --no-color
+conda install tensorflow==2.12 -y
+conda install scikit-image -y
+conda install scikit-learn -y
+pip install --root-user-action=ignore tensorflow-addons==0.20.0 --disable-pip-version-check --no-python-version-warning --root-user-action=ignore -q --no-color
+python yolo_whole.py
+"""
 
+seg_cmds_1 = "conda create -n segmentation_env python=3.11 -y"
+
+seg_cmds_2 = """
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate segmentation_env
+conda install matplotlib -y
+conda install pytorch==2.3 torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia -y
+conda install numpy=1.24 -y
+pip install opencv-python-headless --disable-pip-version-check --no-python-version-warning --root-user-action=ignore -q --no-color
+python main.py --clear --id 003
+"""
+
+seg_cmds_3 = """
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate segmentation_env
+python calculate_for_whole_folder2.py
+"""
+
+
+process = subprocess.Popen(yolo_cmds_1, shell=True)
+
+# Wait for output file
+import time
+while True:
+   exit_code = process.poll()
+   if exit_code is not None:
+      print(f"YOLO env. constructed with exit code: {exit_code}")
+      break
+   else:
+      print("YOLO env building...")
+      time.sleep(10)
+
+# while True:
+#    exit_code = process.poll()
+#    if exit_code is not None:
+#       print(f"YOLO terminated with exit code: {exit_code}")
+#       break
+#    else:
+#       print("YOLO still running...")
+#       time.sleep(10)
 
 # # export all the models from drive with curl
 # def download_file(file_id, filename):
@@ -44,13 +90,18 @@ script_dir = os.path.join(os.getcwd(), "./YOLO/demo")
 # Now, you can run your code that relies on being in the script's directory
 print(f"Runing YOLO in {script_dir}")
 
-subprocess.run(['python', 'yolo_whole.py'], cwd=script_dir)
+process = subprocess.Popen(yolo_cmds_2, shell=True, executable="/bin/bash", cwd=script_dir)
 
 # Wait for output file
 import time
-while not os.path.exists("./OUTPUT/OUTPUT_YOLO"):
-    print("Waiting for YOLO output...")
-    time.sleep(1)
+while True:
+   exit_code = process.poll()
+   if exit_code is not None:
+      print(f"YOLO terminated with exit code: {exit_code}")
+      break
+   else:
+      print("YOLO still running...")
+      time.sleep(10)
 
 # 2- Segmentation
 # COPY TEST_IMAGES
@@ -80,23 +131,54 @@ script_dir = segmentation_dir
 # Now, you can run your code that relies on being in the script's directory
 print(f"Runing segmentation in {script_dir}")
 
-# give only one 
-subprocess.run(['python', 'main.py', '--clear', '--id', '003'], cwd=script_dir)
+# Start the subprocess and poll until it finishes
+
+process = subprocess.Popen(seg_cmds_1, shell=True)
+while True:
+   exit_code = process.poll()
+   if exit_code is not None:
+      print(f"SEGMENTATION env. constructed with exit code: {exit_code}")
+      break
+   else:
+      print("SEGMENTATION env building...")
+      time.sleep(10)
+
+
+process = subprocess.Popen(seg_cmds_2, shell=True, executable="/bin/bash", cwd=script_dir)
+while True:
+   exit_code = process.poll()
+   if exit_code is not None:
+      print(f"SEGMENTATION terminated with exit code: {exit_code}")
+      break
+   else:
+      print("SEGMENTATION still running...")
+      time.sleep(10)
+
 
 script_dir = "./SEGMENTATION/mask_to_notch"
 # Now, you can run your code that relies on being in the script's directory
 print(f"Runing point detection in {script_dir}")
 
-subprocess.run(['python', 'calculate_for_whole_folder2.py'], cwd=script_dir)
+process = subprocess.Popen(seg_cmds_3, shell=True, executable="/bin/bash", cwd=script_dir)
+while True:
+   exit_code = process.poll()
+   if exit_code is not None:
+      print(f"SEGMENTATION-PHASE2 terminated with exit code: {exit_code}")
+      break
+   else:
+      print("SEGMENTATION-PHASE2 still running...")
+      time.sleep(10)
 
 from read_results import read_YOLO_data, read_SEG_data, tranform_points, change_labels, store_data, get_image_name
 import os
+import subprocess
 
 seg_folder = './OUTPUT//OUTPUT_SEGMENTATION//results'
 yolo_file_path = './OUTPUT//OUTPUT_YOLO//results.txt'
 input_images_path = './INPUT_IMAGES'
-data = read_YOLO_data(yolo_file_path)
 
+print("OUTPUT post-processing to json format...")
+data = read_YOLO_data(yolo_file_path)
 data.update(read_SEG_data(seg_folder,data))
 # print('BEFORE: LABEL MAP AND TRANSFORM')
 # print(data)
@@ -113,4 +195,3 @@ for key, value in data.items():
    mapped_data[key] = change_labels(is_left=data[key]['is_left'], data_dict=value)
 
 store_data(mapped_data)
-
