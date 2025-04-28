@@ -9,11 +9,11 @@ Download the required dependencies.
 
 # First
 
+Install python 3.11 in your environment
 1. Create and activate a new conda environment using python 3.11
 ```
-conda create -n new_env python=3.10
+conda create -n new_env python=3.11
 conda activate new_env
-Install python 3.11 in your environment
 ```
 
 # Download Ready Models
