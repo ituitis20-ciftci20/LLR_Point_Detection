@@ -1,13 +1,11 @@
 # LLR_Point_Detection
+# 1. Requirements
+GPU is required. Also Anaconda software is required. 
 
-GPU is required.
-Download the required dependencies.
+# 2. Download the Ready Models
 
-1. Put the Segmentation model (as a folder named Dataset003_FemurTibia) in the SEGMENTATION/bone_seg_nnunet_main folder.
-2. Put YOLO related 3 models (.p and .h5) in the YOLO/models folder:
-- aam_full_h_59_right.p, aam_full_h_59_left.p, model_28.07.2022_3_classes_p6.h5
+Inside the repo, download the ready models:
 
-# Download Ready Models
 1- Dataset003_FemurTibia.zip:
 
 ```curl -L -C - --progress-bar -o Dataset003_FemurTibia.zip "https://drive.usercontent.google.com/download?id=1y3bW4CPER2YmZYJxDZRhLeHTG9VPuzQ0&export=download&authuser=0&confirm=t&uuid=2b6ea6ec-31a6-476b-8197-3ea8ec90e2d2&at=APcmpoy2Z3YD79gc6QT50wxq0Tyu%3A1744993960061"```
@@ -34,10 +32,16 @@ mv aam_full_h_59_right.p ./YOLO/models
 mv aam_full_h_59_left.p ./YOLO/models
 ```
 
-# Input Images
+# 3. Run setup.py
+For one time only, run setup.py program and construct the environments.
+```
+python setup.py
+```
+
+# 4. Input Images
 Put your input images into the ./INPUT_IMAGES folder, then run main.py
 
-# Run the main.py Program
+# 5. Run the main.py Program
 ```
 python main.py
 ```
