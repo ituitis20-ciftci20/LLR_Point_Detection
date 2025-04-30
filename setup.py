@@ -1,12 +1,14 @@
 import subprocess
 
-import subprocess
-
-
 yolo_cmds_1 = "conda create -n yolo_env python=3.11 -y"
 
-yolo_cmds_2 = """
-source ~/miniconda3/etc/profile.d/conda.sh
+yolo_cmds_2 = r"""
+CONDA_BASE=$(conda info --base)
+if [ -f "$CONDA_BASE/etc/profile.d/conda.sh" ]; then
+  source "$CONDA_BASE/etc/profile.d/conda.sh"
+else
+  echo "ERROR: conda.sh not found" >&2; exit 1
+fi
 conda activate yolo_env
 conda install scipy==1.10.0 -y
 conda install -c conda-forge menpo -y
@@ -20,8 +22,13 @@ pip install pillow --disable-pip-version-check --no-python-version-warning --roo
 
 seg_cmds_1 = "conda create -n segmentation_env python=3.11 -y"
 
-seg_cmds_2 = """
-source ~/miniconda3/etc/profile.d/conda.sh
+seg_cmds_2 = r"""
+CONDA_BASE=$(conda info --base)
+if [ -f "$CONDA_BASE/etc/profile.d/conda.sh" ]; then
+  source "$CONDA_BAS+E/etc/profile.d/conda.sh"
+else
+  echo "ERROR: conda.sh not found" >&2; exit 1
+fi
 conda activate segmentation_env
 conda install matplotlib -y
 conda install pytorch==2.3 torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia -y
