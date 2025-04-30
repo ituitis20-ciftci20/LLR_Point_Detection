@@ -1,19 +1,34 @@
 import subprocess
 
-yolo_cmds = """
-source ~/miniconda3/etc/profile.d/conda.sh
+yolo_cmds = r"""
+CONDA_BASE=$(conda info --base)
+if [ -f "$CONDA_BASE/etc/profile.d/conda.sh" ]; then
+  source "$CONDA_BASE/etc/profile.d/conda.sh"
+else
+  echo "ERROR: conda.sh not found" >&2; exit 1
+fi
 conda activate yolo_env
 python yolo_whole.py
 """
 
-seg_cmds_1 = """
-source ~/miniconda3/etc/profile.d/conda.sh
+seg_cmds_1 = r"""
+CONDA_BASE=$(conda info --base)
+if [ -f "$CONDA_BASE/etc/profile.d/conda.sh" ]; then
+  source "$CONDA_BASE/etc/profile.d/conda.sh"
+else
+  echo "ERROR: conda.sh not found" >&2; exit 1
+fi
 conda activate segmentation_env
 python main.py --id 003 --clear
 """
 
-seg_cmds_2 = """
-source ~/miniconda3/etc/profile.d/conda.sh
+seg_cmds_2 = r"""
+CONDA_BASE=$(conda info --base)
+if [ -f "$CONDA_BASE/etc/profile.d/conda.sh" ]; then
+  source "$CONDA_BASE/etc/profile.d/conda.sh"
+else
+  echo "ERROR: conda.sh not found" >&2; exit 1
+fi
 conda activate segmentation_env
 python calculate_for_whole_folder2.py
 """
