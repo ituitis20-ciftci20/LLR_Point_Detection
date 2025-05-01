@@ -25,7 +25,7 @@ seg_cmds_1 = "conda create -n segmentation_env python=3.11 -y"
 seg_cmds_2 = r"""
 CONDA_BASE=$(conda info --base)
 if [ -f "$CONDA_BASE/etc/profile.d/conda.sh" ]; then
-  source "$CONDA_BAS+E/etc/profile.d/conda.sh"
+  source "$CONDA_BASE/etc/profile.d/conda.sh"
 else
   echo "ERROR: conda.sh not found" >&2; exit 1
 fi
