@@ -42,13 +42,20 @@ python setup.py
 Put your input images into the ./INPUT_IMAGES folder, then run main.py
 
 # 5. Run the main.py Program
+Run all the pipeline
 ```
-python main.py
+python main.py --mode all
 ```
 
+Or run only the segmentation
+```
+python main.py --mode segmentation
+```
 # Outputs
-Output images of YOLO model can be found at ./OUTPUT/YOLO folder
+Output images of YOLO model can be found at ./OUTPUT/YOLO
 
 Output images of Segmentation model, can be found at ./OUTPUT/SEGMENTATION/test
 
-Points in the Json format can be found ./OUTPUT/JSON_RESULTS
+Specific points in the Json format can be found at ./OUTPUT/JSON_RESULTS
+
+All segmentation points can be found at ./OUTPUT/JSON_SEGMENTATION
