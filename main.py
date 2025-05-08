@@ -1,3 +1,14 @@
+import argparse
+import time
+
+parser = argparse.ArgumentParser(description="Run YOLO + Segmentation Pipeline")
+parser.add_argument('--mode', type=str, choices=['all', 'segmentation'], default='all',
+               help="Mode to run the pipeline: 'all' or 'segmentation' only")
+args = parser.parse_args()
+
+# Dictionary to store timestamps
+timestamps = {}
+
 import subprocess
 
 yolo_cmds = r"""
@@ -33,146 +44,149 @@ conda activate segmentation_env
 python calculate_for_whole_folder2.py
 """
 
-
-# while True:
-#    exit_code = process.poll()
-#    if exit_code is not None:
-#       print(f"YOLO terminated with exit code: {exit_code}")
-#       break
-#    else:
-#       print("YOLO still running...")
-#       time.sleep(10)
-
-# # export all the models from drive with curl
-# def download_file(file_id, filename):
-#   """Downloads a file from Google Drive using its file ID.
-
-#   Args:
-#     file_id: The ID of the file to download.
-#     filename: The name of the file to save the downloaded content to.
-#   """
-#   url = f"https://drive.google.com/uc?export=download&id={file_id}"
-#   try:
-#     subprocess.run(['curl', '-L', '-o', filename, url], check=True)
-#     print(f"File '{filename}' downloaded successfully.")
-#   except subprocess.CalledProcessError as e:
-#     print(f"Error downloading file: {e}")
-
-
-# # Example usage:
-# # Replace with your actual FILE_ID and desired filename
-# yolo1_id = "1D-2FUgt-g1LH-Pt1-dnAB8Ys2rjfJ-0S"
-# yolo2_id = "1kgtJmkIPHG8uJl-4WYSW0bxObtZCtYGy"
-# yolo3_id = "10uvr4BaMPLAVS6o4TT5wUbwkpJEygATg"
-# segmttn_id =
-# filename = "Dataset003_FemurTibia.zip"
-# download_file(segmentation_id, filename)
-
 import os
 import sys
-
-# 1- YOLO
-script_dir = os.path.join(os.getcwd(), "./YOLO/demo")
-
-# Now, you can run your code that relies on being in the script's directory
-print(f"Runing YOLO in {script_dir}")
-
-process = subprocess.Popen(yolo_cmds, shell=True, executable="/bin/bash", cwd=script_dir)
-
-# Wait for output file
-import time
-while True:
-   exit_code = process.poll()
-   if exit_code is not None:
-      print(f"YOLO terminated with exit code: {exit_code}")
-      break
-   else:
-      print("YOLO still running...")
-      time.sleep(10)
-
-# 2- Segmentation
-# COPY TEST_IMAGES
-print("Copying INPUT_IMAGES into the SEGMENTATION folder...")
-
 import shutil
-segmentation_dir = os.path.join(os.getcwd(),"./SEGMENTATION/bone_seg_nnunet_main")
-input_images_dir = "./INPUT_IMAGES"
-testing_images_dir = os.path.join(segmentation_dir, "./testing_images")
 
-if os.path.exists(testing_images_dir):
-    if not os.path.isdir(testing_images_dir):
-        os.remove(testing_images_dir)
-    else:
-        shutil.rmtree(testing_images_dir)
-os.makedirs(testing_images_dir, exist_ok=True)
-print(testing_images_dir)
+def copy_images(src_dir, dest_dir):
+   """
+   Copy images from src_dir to dest_dir.
+   """
+   os.makedirs(dest_dir, exist_ok=True)
+   print(dest_dir)
 
-# Check if input images directory exists
-if os.path.exists(input_images_dir):
-    for file_name in os.listdir(input_images_dir):
-        file_path = os.path.join(input_images_dir, file_name)
-        if os.path.isfile(file_path):
+   # Check if input images directory exists
+   if os.path.exists(src_dir):
+     for file_name in os.listdir(src_dir):
+       file_path = os.path.join(src_dir, file_name)
+       if os.path.isfile(file_path):
             print(file_path)
-            shutil.copy(file_path, testing_images_dir)
-else:
-    print(f"Directory {input_images_dir} does not exist.")
-
-# Get the script's directory
-script_dir = segmentation_dir
-
-# Now, you can run your code that relies on being in the script's directory
-print(f"Runing segmentation in {script_dir}")
-
-# Start the subprocess and poll until it finishes
-process = subprocess.Popen(seg_cmds_1, shell=True, executable="/bin/bash", cwd=script_dir)
-while True:
-   exit_code = process.poll()
-   if exit_code is not None:
-      print(f"SEGMENTATION terminated with exit code: {exit_code}")
-      break
+            shutil.copy(file_path, dest_dir)
    else:
-      print("SEGMENTATION still running...")
-      time.sleep(10)
+     print(f"Directory {src_dir} does not exist.")
 
+if args.mode == "all":
+   # 1- YOLO
+   script_dir = os.path.join(os.getcwd(), "./YOLO/demo")
+   print(f"Running YOLO in {script_dir}")
 
-script_dir = "./SEGMENTATION/mask_to_notch"
-# Now, you can run your code that relies on being in the script's directory
-print(f"Runing point detection in {script_dir}")
+   process = subprocess.Popen(yolo_cmds, shell=True, executable="/bin/bash", cwd=script_dir)
+   while True:
+     exit_code = process.poll()
+     if exit_code is not None:
+       print(f"YOLO terminated with exit code: {exit_code}")
+       timestamps["YOLO_end"] = time.time()
+       break
+     else:
+       print("YOLO still running...")
+       time.sleep(10)
 
-process = subprocess.Popen(seg_cmds_2, shell=True, executable="/bin/bash", cwd=script_dir)
-while True:
-   exit_code = process.poll()
-   if exit_code is not None:
-      print(f"SEGMENTATION-PHASE2[Point Detection] terminated with exit code: {exit_code}")
-      break
-   else:
-      print("SEGMENTATION-PHASE2[Point Detection] still running...")
-      time.sleep(10)
+if args.mode in ["all", "segmentation"]:
+   # 2- SEGMENTATION steps
 
-from read_results import read_YOLO_data, read_SEG_data, tranform_points, change_labels, store_data, get_image_name
-import os
-import subprocess
+   # COPY TEST_IMAGES
+   print("Copying INPUT_IMAGES into the SEGMENTATION folder...")
+   segmentation_dir = os.path.join(os.getcwd(),"./SEGMENTATION/bone_seg_nnunet_main")
+   input_images_dir = "./INPUT_IMAGES"
+   testing_images_dir = os.path.join(segmentation_dir, "./testing_images")
 
-yolo_file_path = './OUTPUT//OUTPUT_YOLO//results.txt'
-seg_folder = './OUTPUT//OUTPUT_SEGMENTATION//results'
-input_images_path = './INPUT_IMAGES'
+   if os.path.exists(testing_images_dir):
+     if not os.path.isdir(testing_images_dir):
+       os.remove(testing_images_dir)
+     else:
+       shutil.rmtree(testing_images_dir)
+   copy_images(input_images_dir, testing_images_dir)
 
-print("OUTPUT post-processing to json format...")
-data = read_YOLO_data(yolo_file_path)
-data.update(read_SEG_data(seg_folder,data))
-# print('BEFORE: LABEL MAP AND TRANSFORM')
-# print(data)
+   # Run first segmentation process
+   script_dir = segmentation_dir
+   print(f"Running segmentation in {script_dir}")
+   process = subprocess.Popen(seg_cmds_1, shell=True, executable="/bin/bash", cwd=script_dir)
+   while True:
+     exit_code = process.poll()
+     if exit_code is not None:
+       print(f"SEGMENTATION terminated with exit code: {exit_code}")
+       timestamps["SEGMENTATION_phase1_end"] = time.time()
+       break
+     else:
+       print("SEGMENTATION still running...")
+       time.sleep(10)
 
-mapped_data = {}
-for key, value in data.items():
-   is_left = False
-   if key.find('left') != -1:
-      data[key]['is_left'] = True
-   else:
-      data[key]['is_left'] = False
-   img_path = os.path.join(input_images_path, get_image_name(key)[0]+'.png')
-   if os.path.exists(img_path):
-      tranform_points(image_path=img_path, data=value)
-      mapped_data[key] = change_labels(is_left=data[key]['is_left'], data_dict=value)
+   # Run second segmentation command (json generation)
+   cmd_seg_json = r"""
+   CONDA_BASE=$(conda info --base)
+   if [ -f "$CONDA_BASE/etc/profile.d/conda.sh" ]; then
+     source "$CONDA_BASE/etc/profile.d/conda.sh"
+   else
+     echo "ERROR: conda.sh not found" >&2; exit 1
+   fi
+   conda activate segmentation_env
+   python main_json.py --clear
+   """
+   print(f"Running segmentation json command in {segmentation_dir}")
+   process = subprocess.Popen(
+     cmd_seg_json,
+     shell=True,
+     executable="/bin/bash",
+     cwd=segmentation_dir
+   )
+   process.communicate()
+   while True:
+     exit_code = process.poll()
+     if exit_code is not None:
+       # Copy jsons to OUTPUT/JSON_SEGMENTATION
+       os.makedirs(os.path.join("./", "./OUTPUT"), exist_ok=True)
+       os.makedirs(os.path.join("./", "./OUTPUT/JSON_SEGMENTATION"), exist_ok=True)
+       copy_images(os.path.join(segmentation_dir, "jsons"), os.path.join("./", "./OUTPUT/JSON_SEGMENTATION"))
+       print(f"MASK_TO_JSON terminated with exit code: {exit_code}")
+       timestamps["SEGMENTATION_phase2_end"] = time.time()
+       break
+     else:
+       print("MASK_TO_JSON still running...")
+       time.sleep(10)
 
-store_data(mapped_data)
+if args.mode == "all":
+   # 3- Point detection segmentation step
+   script_dir = "./SEGMENTATION/mask_to_notch"
+   print(f"Running point detection in {script_dir}")
+   process = subprocess.Popen(seg_cmds_2, shell=True, executable="/bin/bash", cwd=script_dir)
+   while True:
+     exit_code = process.poll()
+     if exit_code is not None:
+       print(f"SEGMENTATION-PHASE2[Point Detection] terminated with exit code: {exit_code}")
+       timestamps["POINT_DETECTION_end"] = time.time()
+       break
+     else:
+       print("SEGMENTATION-PHASE2[Point Detection] still running...")
+       time.sleep(10)
+
+   from read_results import read_YOLO_data, read_SEG_data, tranform_points, change_labels, store_data, get_image_name
+   import os
+
+   yolo_file_path = './OUTPUT//OUTPUT_YOLO//results.txt'
+   seg_folder = './OUTPUT//OUTPUT_SEGMENTATION//results'
+   input_images_path = './INPUT_IMAGES'
+
+   print("OUTPUT post-processing to json format...")
+   data = read_YOLO_data(yolo_file_path)
+   data.update(read_SEG_data(seg_folder,data))
+
+   mapped_data = {}
+   for key, value in data.items():
+     is_left = False
+     if key.find('left') != -1:
+       data[key]['is_left'] = True
+     else:
+       data[key]['is_left'] = False
+     img_path = os.path.join(input_images_path, get_image_name(key)[0]+'.png')
+     if os.path.exists(img_path):
+       tranform_points(image_path=img_path, data=value)
+       mapped_data[key] = change_labels(is_left=data[key]['is_left'], data_dict=value)
+
+   store_data(mapped_data)
+
+# Finally, print out all recorded timestamps in a human-readable format.
+print("\nTime Marks:")
+for stage, ts in timestamps.items():
+   # Format the timestamp
+   formatted_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(ts))
+   print(f"{stage}: {formatted_time}")
