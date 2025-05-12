@@ -65,6 +65,29 @@ def copy_images(src_dir, dest_dir):
    else:
      print(f"Directory {src_dir} does not exist.")
 
+def clean_up():
+
+   # Clean up: remove the transit directory after processing
+   dirs_to_clean = [
+      os.path.join(os.getcwd(), "./SEGMENTATION/bone_seg_nnunet_main/testing_images"),
+      os.path.join(os.getcwd(), "./SEGMENTATION/bone_seg_nnunet_main/postprocessed"),
+      os.path.join(os.getcwd(), "./SEGMENTATION/bone_seg_nnunet_main/predictions"),
+      os.path.join(os.getcwd(), "./SEGMENTATION/bone_seg_nnunet_main/jsons"),
+      os.path.join(os.getcwd(), "./OUTPUT/"),
+   ]
+
+
+   for d in dirs_to_clean:
+      if os.path.exists(d):
+         if os.path.isfile(d):
+               os.remove(d)
+         else:
+               shutil.rmtree(d)
+         print(f"Cleaned the object at start: {d}")
+
+# Clean up: remove the transit directory at the start
+clean_up()
+
 if args.mode == "all":
    # 1- YOLO
    script_dir = os.path.join(os.getcwd(), "./YOLO/demo")
@@ -190,3 +213,4 @@ for stage, ts in timestamps.items():
    # Format the timestamp
    formatted_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(ts))
    print(f"{stage}: {formatted_time}")
+
